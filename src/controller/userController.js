@@ -30,16 +30,8 @@ exports.loginUser = async function (req, res) {
             return res.status(400).send({ status: false, msg: 'body can not be empty' })
         }
 
-        if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
-            res.status(400).send({
-                status: false,
-                message: `${email} should be a valid email address`,
-            });
-        }
-
-
         let user = await userModel.findOne({ email: email, password: password })
-        if (!user) return res.status(400).send({ status: false, msg: "please enter valid email or password" })
+        if (!user) return res.status(404).send({ status: false, msg: "please enter valid email or password" })
 
         let token = jwt.sign({
             id: user._id.toString(),
