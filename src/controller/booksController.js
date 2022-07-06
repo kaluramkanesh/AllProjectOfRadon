@@ -1,5 +1,5 @@
 const bookModel = require("../models/booksModel")
-const validator = require("../validator/bookValidation")
+const validator = require("../validator/validation")
 
 
 
