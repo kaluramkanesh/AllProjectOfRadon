@@ -1,14 +1,15 @@
 const express = require("express")
-const userController = require("../controller/userController")
 const router = express.Router()
+const userController = require("../controller/userController")
 const bookController = require("../controller/booksController")
-const validator = require("../validator/validation")
-const Authenticate = require("../middleware/auth")
-router.get("/test", function (req, res) {
-    res.send("Test api ")
-})
+const reviewController = require("../controller/reviewcontroller")
+const validator  = require("../validator/validation")
+
+
 router.post("/register", validator.userValidation, userController.createUser)
 router.post('/login', userController.loginUser)
+
+/************BOOK ROUTER👍************/
 router.post("/books",Authenticate.Authenticate,bookController.createBook)
 router.get("/books",bookController.getBook)
 
@@ -19,6 +20,12 @@ router.all("/**", function (req, res) {
         msg: "The api you request is not available"
     })
 })
+
+
+
+
+/*********************Review ROUTER**********************/
+router.post("/books/:bookId/review", validator.reviewValidation, reviewController.createReview)
 
 
 module.exports = router

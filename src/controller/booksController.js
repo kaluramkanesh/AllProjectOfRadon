@@ -1,6 +1,7 @@
 const bookModel = require("../models/booksModel")
 const reviewModel = require('../models/reviewModel')
 const mongoose = require("mongoose")
+<<<<<<< HEAD
 const isvalid = function (value) {
     if (typeof value === undefined || typeof value === null) return false
     if (typeof value !== String || value.trim().length == 0) return false
@@ -10,6 +11,12 @@ const isValidKey = function (value) {
     if (!value) return false
     return true
 }
+=======
+const ObjectId = mongoose.Types.ObjectId
+
+
+
+>>>>>>> bd1537d819c3d1646739c25b7c8f0ec70b79ae8b
 exports.createBook = async function (req, res) {
     try {
         const bookData = req.body
@@ -134,5 +141,23 @@ exports.getBook = async function (req, res) {
     catch (err) {
         console.log(err)
         res.status(500).send({ status: false, msg: err.message })
+    }
+}
+
+exports.getBookById = async function (req, res) {
+    try {
+        let bookId = req.params.bookId
+        if(!(ObjectId.isValid(bookId)) || !bookId) return res.status(400).send({status:false,msg:'Enter a valid ObjectId'})
+        let findBook = await bookModel.findOne({ _id: bookId }).select({deletedAt:0})
+        if (!findBook) return res.status(404).send({ status: false, msg: "no data found" })
+        let findReview = await reviewModel.find({ bookId: bookId })
+
+        let result = { ...findBook.toJSON(), reviewsData: findReview }
+
+        res.status(200).send({ status: true, message: "Book-list", data: result })
+
+
+    } catch (err) {
+        res.status(500).send(err.message)
     }
 }

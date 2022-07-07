@@ -1,12 +1,6 @@
 const userModel = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 
-
-const isvalid = function (value) {
-    if (typeof value === undefined || typeof value === null) return false
-    if (typeof value === String || value.trim().length == 0) return false
-    return true
-}
 /**************************************Start's Create User Api's****************************************/
 exports.createUser = async function (req, res) {
 
