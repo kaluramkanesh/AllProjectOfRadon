@@ -10,6 +10,7 @@ router.get("/test", function (req, res) {
 router.post("/register",validator.userValidation, userController.createUser)
 router.post('/login', userController.loginUser)
 router.post("/books", bookController.createBook)
+router.get("/books/:bookId",bookController.getBookById)
 
 
 module.exports = router
