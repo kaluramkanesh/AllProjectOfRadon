@@ -9,7 +9,7 @@ router.get("/test", function (req, res) {
 })
 router.post("/register", validator.userValidation, userController.createUser)
 router.post('/login', userController.loginUser)
-router.post("/books", bookController.createBook)
+router.post("/books",Authenticate.Authenticate,bookController.createBook)
 router.get("/books",bookController.getBook)
 
 
