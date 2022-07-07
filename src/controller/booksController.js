@@ -6,7 +6,7 @@ const reviewModel = require('../models/reviewModel')
 exports.createBook = async function (req, res) {
     try {
 
-        const book = req.body
+        const bookData = req.body
 
         
 
