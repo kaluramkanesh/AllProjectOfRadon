@@ -1,5 +1,5 @@
 const bookModel = require("../models/booksModel")
-const validator = require("../validator/validation")
+const reviewModel = require('../models/reviewModel')
 
 
 
@@ -8,9 +8,44 @@ exports.createBook = async function (req, res) {
 
         const book = req.body
 
-        const { title, excerpt, userId, ISBN, category, subcategory, reviews, releasedAt } = book
+        
 
-        const saved = await bookModel.create(book)
+        const fieldAllowed = ["title", "excerpt", "userId", "ISBN", "category", "subcategory", "releasedAt"]
+        const keyOf = Object.keys(bookData);
+        const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
+        if (receivedKey.length)
+        {
+            return res
+                .status(400)
+                .send({ status: "false", msg: `${receivedKey} field is missing` });
+        }
+
+        const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = bookData
+
+        const isDupliCateTitle = await bookModel.findOne({ title: title })
+        if (isDupliCateTitle)
+        {
+            return res.status(400).send({ status: false, msg: "Title is already present" })
+        }
+
+        const isvalidUserId = await userModel.findById(userId)
+        if (!isvalidUserId)
+        {
+            return res.status(404).send({ status: false, msg: "User not found" })
+        }
+
+        const isDupliCateISBN = await bookModel.findOne({ ISBN: ISBN })
+        if (!isDupliCateISBN)
+        {
+            return res.status(400).send({ status: false, msg: "ISBN is already present" })
+        }
+
+        if (!(/^\d{4}-\d{2}-\d{2}$/.test(releasedAt)))
+        {
+            return res.status(400).send({ status: false, msg: `${releasedAt} is an invalid date, formate should be like this YYYY-MM-DD` })
+        }
+
+        const saved = await bookModel.create(bookData)
         res.status(201).send({ status: true, data: saved })
     }
     catch (err) {

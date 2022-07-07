@@ -38,10 +38,8 @@ exports.loginUser = async function (req, res) {
             batch: "radon",
             organization: "functionUp"
         }, "GroupNo-27", { expiresIn: '1h' })
-        let decoded = jwt.verify(token, "GroupNo-27")
-        let exp = decoded.exp;
-        console.log(exp)
-        res.status(200).send({ status: true, token: token })
+
+        res.status(200).send({ status: true, message : 'Success', data: token })
     } catch (err) {
         res.status(500).send(err.message)
     }
