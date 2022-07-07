@@ -35,6 +35,7 @@ exports.getBook = async function (req, res) {
 exports.getBookById = async function (req, res) {
     try {
         let bookId = req.params.bookId
+        if(!(ObjectId.isValid(bookId)) || !bookId) return res.status(400).send({status:false,msg:'Enter a valid ObjectId'})
         let findBook = await bookModel.findOne({ _id: bookId }).select({deletedAt:0})
         if (!findBook) return res.status(404).send({ status: false, msg: "no data found" })
         let findReview = await reviewModel.find({ bookId: bookId })
