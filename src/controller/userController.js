@@ -38,8 +38,8 @@ exports.loginUser = async function (req, res) {
             batch: "radon",
             organization: "functionUp"
         }, "GroupNo-27", { expiresIn: '1h' })
-
-        res.status(200).send({ status: true, message : 'Success', data: token })
+        res.setHeader("x-api-key", token);
+        res.status(200).send({ status: true, message: 'Success', data: token })
     } catch (err) {
         res.status(500).send(err.message)
     }
