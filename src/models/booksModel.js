@@ -4,7 +4,7 @@ const bookSchema = new mongoose.Schema({
 
     title: { type: String, required: true, unique: true, trim: true },
     excerpt: { type: String, required: true, trim: true },
-    userId: { type: ObjectId, required: true, ref: "" },
+    userId: { type: ObjectId, required: true, ref: "user" },
     ISBN: { type: String, required: true, unique: true, trim: true },
     category: { type: String, required: true },
     subcategory: { type: [String], require: true },
