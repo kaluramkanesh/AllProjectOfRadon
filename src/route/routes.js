@@ -4,7 +4,7 @@ const userController = require("../controller/userController")
 const bookController = require("../controller/booksController")
 const reviewController = require("../controller/reviewcontroller")
 const validator  = require("../validator/validation")
-
+const Authenticate=require("../middleware/auth")
 
 router.post("/register", validator.userValidation, userController.createUser)
 router.post('/login', userController.loginUser)
