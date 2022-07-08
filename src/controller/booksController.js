@@ -109,7 +109,7 @@ exports.getBook = async function (req, res) {
         let filters = req.query
 
         Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
-
+        if(filters.userId!=24){res.status(400).send(" UserId Invalid ")}
 
         if (Object.keys(filters).length === 0) {
 
