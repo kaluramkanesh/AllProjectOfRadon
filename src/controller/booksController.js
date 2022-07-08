@@ -20,7 +20,7 @@ exports.createBook = async function (req, res) {
         const fieldAllowed = ["title", "excerpt", "userId", "ISBN", "category", "subcategory", "releasedAt"]
         const keyOf = Object.keys(bookData);
         const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
-        if (receivedKey.length)
+        if (!receivedKey.length)
         {
             return res
                 .status(400)
@@ -182,9 +182,9 @@ exports.deleteBooks = async function (req, res) {
             return res.status(404).send({ status: false, msg: "book is not available" })
         }
        
-        const deleteBook = await bookModel.findOneAndUpdate({ _id: bookId }, { isDeleted: true, deletedAt: new Date() },
+        const deleteBook = await bookModel.findByIdAndUpdate(bookId , { isDeleted: true, deletedAt: new Date() },
             { new: true })
-        res.status(200).send({ status: true, msg: "Book successfully deleted", data: deleteBook })
+        res.status(200).send({ status: true, msg: "Book successfully deleted", })
     }
     catch (err)
     {
