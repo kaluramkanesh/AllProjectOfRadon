@@ -2,15 +2,7 @@ const reviewModel = require('../models/reviewModel')
 const booksModel = require('../models/booksModel')
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId
-// const isvalid = function (value) {
-//     if (typeof value === undefined || typeof value === null) return false
-//     if (typeof value === String || value.trim().length == 0) return false
-//     return true
-// }
-// const isValidKey = function (value) {
-//     if (!value) return false
-//     true
-// }
+
 
 exports.createReview = async function (req, res) {
     try {
@@ -25,7 +17,9 @@ exports.createReview = async function (req, res) {
         details.rating = rating
 
         let setReview = await reviewModel.create(details)
-        res.status(201).send({ status: true, message: "Success", data: setReview })
+        let updateBook = await booksModel.findOneAndUpdate({_id:bookId},{$inc:{reviews :1}},{new:true})
+        let mixed = {...updateBook.toJSON(),reviewData: setReview}
+        res.status(201).send({ status: true, message: "Success", data: mixed})
 
     } catch (err) {
         res.status(500).send(err.message)
