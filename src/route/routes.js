@@ -6,12 +6,14 @@ const reviewController = require("../controller/reviewcontroller")
 const auth = require('../middleware/auth')
 const validator  = require("../validator/validation")
 
+
 router.post("/register", validator.userValidation, userController.createUser)
 router.post('/login', userController.loginUser)
 
 /************BOOK ROUTER👍************/
 router.post("/books",auth.Authenticate,bookController.createBook)
 router.get("/books",auth.Authenticate,bookController.getBook)
+router.delete("/books/:bookId",auth.Authenticate,auth.Authorization,bookController.deleteBooks)
 
 /*********************Review ROUTER**********************/
 router.post("/books/:bookId/review", validator.reviewValidation, reviewController.createReview)
