@@ -33,3 +33,17 @@ exports.Authenticate = function (req, res, next) {
 
 }
 
+exports.Authorization = async function (req, res, next) {
+    try {
+        let token = req.headers["x-api-key"]
+        let decodedtoken = jwt.verify(token, "GroupNo-27")
+        let loggedInUserId = decodedtoken.id
+        let bookId = req.params.bookId
+        if (loggedInUserId !== bookId) return res.status(403).send({ status: false, msg: "the user is unauthorized" })
+
+        next();
+    } catch (err) {
+        res.status(500).send(err.message)
+    }
+}
+

@@ -3,6 +3,7 @@ const router = express.Router()
 const userController = require("../controller/userController")
 const bookController = require("../controller/booksController")
 const reviewController = require("../controller/reviewcontroller")
+const auth = require('../middleware/auth')
 const validator  = require("../validator/validation")
 
 
@@ -10,8 +11,8 @@ router.post("/register", validator.userValidation, userController.createUser)
 router.post('/login', userController.loginUser)
 
 /************BOOK ROUTER👍************/
-router.post("/books",Authenticate.Authenticate,bookController.createBook)
-router.get("/books",bookController.getBook)
+router.post("/books",auth.Authenticate,bookController.createBook)
+router.get("/books",auth.Authenticate,bookController.getBook)
 
 
 router.all("/**", function (req, res) {

@@ -5,9 +5,9 @@ exports.createReview = async function(req,res){
     try{
         const{reviewedBy,review,rating} = req.body
         let bookId = req.params.bookId.trim()
-        let findBook = await booksModel.findOne({_id:bookId})
+        let findBook = await booksModel.findOne({_id:bookId,isDeleted:false})
         if(!findBook) return res.status(404).send({status:false,msg:'your searched book is not exist'})
-        let details={isDeleted:false}
+        let details={}
         details.bookId = bookId.trim()
         details.reviewedBy=reviewedBy.trim()
         details.review = review.trim()
@@ -20,3 +20,4 @@ exports.createReview = async function(req,res){
         res.status(500).send(err.message)
     }
 }
+
