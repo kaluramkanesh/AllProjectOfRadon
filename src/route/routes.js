@@ -5,7 +5,7 @@ const bookController = require("../controller/booksController")
 const reviewController = require("../controller/reviewcontroller")
 const auth = require('../middleware/auth')
 const validator  = require("../validator/validation")
-const auth=require("../middleware/auth")
+
 
 router.post("/register", validator.userValidation, userController.createUser)
 router.post('/login', userController.loginUser)
@@ -13,6 +13,8 @@ router.post('/login', userController.loginUser)
 /************BOOK ROUTER👍************/
 router.post("/books",auth.Authenticate,bookController.createBook)
 router.get("/books",auth.Authenticate,bookController.getBook)
+
+router.delete("/DELETE/books/:bookId",auth.Authorization,bookController.deleteBooks)
 
 
 router.all("/**", function (req, res) {
