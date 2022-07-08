@@ -5,7 +5,7 @@ const bookController = require("../controller/booksController")
 const reviewController = require("../controller/reviewcontroller")
 const auth = require('../middleware/auth')
 const validator  = require("../validator/validation")
-const Authenticate=require("../middleware/auth")
+const auth=require("../middleware/auth")
 
 router.post("/register", validator.userValidation, userController.createUser)
 router.post('/login', userController.loginUser)
