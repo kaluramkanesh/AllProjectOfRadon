@@ -39,7 +39,7 @@ exports.userValidation = async function (req, res, next) {
 
     if (!isvalid(phone)) return res.status(400).send({ status: false, msg: `${phone} is not valid  mobile number` })
 
-    if (!/^[6789]\d{9}*$/.test(phone)) return res.status(400).send({ status: false, msg: `${phone} it will containt only number not accept space or special charecture` })
+    if (!/^[6789]\w{9}*$/.test(phone)) return res.status(400).send({ status: false, msg: `${phone} it will containt only number not accept space or special charecture` })
 
     let findPhoneNumber = await userModel.findOne({ phone: phone }).select({ phone: 1 })
 
@@ -74,7 +74,7 @@ exports.userValidation = async function (req, res, next) {
     /*************Street validation*************/
     if (!isvalid(data.address["street"])) return res.status(400).send({ status: false, msg: `${data.address["street"]} is not valid street` })
 
-    if (!/^[a-zA-Z .,-_]{2,15}$/.test(data.address["street"])) return res.status(400).send({ status: false, msg: `${data.address["street"]}` })
+    if (!/^[a-zA-Z .,-_]{2,15}$/.test(data.address["street"])) return res.status(400).send({ status: false, msg: `${data.address["street"]} please enter valid street name` })
     /*************Street validation*************/
 
     /*************City validation*************/

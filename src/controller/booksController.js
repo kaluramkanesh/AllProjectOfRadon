@@ -1,33 +1,21 @@
 const bookModel = require("../models/booksModel")
 const reviewModel = require('../models/reviewModel')
 const mongoose = require("mongoose")
-<<<<<<< HEAD
-const isvalid = function (value) {
-    if (typeof value === undefined || typeof value === null) return false
-    if (typeof value !== String || value.trim().length == 0) return false
-    return true
-}
-const isValidKey = function (value) {
-    if (!value) return false
-    return true
-}
-=======
 const ObjectId = mongoose.Types.ObjectId
 
 
 
->>>>>>> bd1537d819c3d1646739c25b7c8f0ec70b79ae8b
 exports.createBook = async function (req, res) {
     try {
         const bookData = req.body
-        const fieldAllowed = ["title", "excerpt", "userId", "ISBN", "category", "subcategory", "releasedAt"]
-        const keyOf = Object.keys(bookData);
-        const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
-        if (receivedKey.length) {
-            return res
-                .status(400)
-                .send({ status: "false", msg: `${receivedKey} field is missing` });
-        }
+        // const fieldAllowed = ["title", "excerpt", "userId", "ISBN", "category", "subcategory", "releasedAt"]
+        // const keyOf = Object.keys(bookData);
+        // const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
+        // if (receivedKey.length) {
+        //     return res
+        //         .status(400)
+        //         .send({ status: "false", msg: `${receivedKey} field is missing` });
+        // }
 
         const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = bookData
         /**********************************Start's title validation********************************/
