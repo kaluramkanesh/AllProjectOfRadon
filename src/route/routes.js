@@ -5,7 +5,6 @@ const bookController = require("../controller/booksController")
 const reviewController = require("../controller/reviewcontroller")
 const auth = require('../middleware/auth')
 const validator  = require("../validator/validation")
-const auth=require("../middleware/auth")
 
 router.post("/register", validator.userValidation, userController.createUser)
 router.post('/login', userController.loginUser)
@@ -14,6 +13,11 @@ router.post('/login', userController.loginUser)
 router.post("/books",auth.Authenticate,bookController.createBook)
 router.get("/books",auth.Authenticate,bookController.getBook)
 
+/*********************Review ROUTER**********************/
+router.post("/books/:bookId/review", validator.reviewValidation, reviewController.createReview)
+router.delete('/books/:bookId/review/:reviewId', reviewController.deleteReview)
+
+
 
 router.all("/**", function (req, res) {
     res.status(404).send({
@@ -21,12 +25,5 @@ router.all("/**", function (req, res) {
         msg: "The api you request is not available"
     })
 })
-
-
-
-
-/*********************Review ROUTER**********************/
-router.post("/books/:bookId/review", validator.reviewValidation, reviewController.createReview)
-
 
 module.exports = router
