@@ -181,10 +181,11 @@ exports.deleteBooks = async function (req, res) {
         {
             return res.status(404).send({ status: false, msg: "book is not available" })
         }
+        if(!ObjectId.isValid(bookId)) return res.status(400).send({status:false,msg:`${bookId} is not a valid ObjectId😥😥`})
        
         const deleteBook = await bookModel.findByIdAndUpdate(bookId , { isDeleted: true, deletedAt: new Date() },
             { new: true })
-        res.status(200).send({ status: true, msg: "Book successfully deleted", })
+        res.status(200).send({ status: true, msg: "Book successfully deleted😍😍", })
     }
     catch (err)
     {
