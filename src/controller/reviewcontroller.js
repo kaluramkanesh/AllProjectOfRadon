@@ -18,7 +18,7 @@ exports.createReview = async function (req, res) {
 
         let setReview = await reviewModel.create(details)
         let updateBook = await booksModel.findOneAndUpdate({_id:bookId},{$inc:{reviews :1}},{new:true})
-        let mixed = {...updateBook.toJSON(),reviewData: setReview}
+        let mixed = {...updateBook.toJSON(),reviewsData: setReview}
         res.status(201).send({ status: true, message: "Success", data: mixed})
 
     } catch (err) {
@@ -35,6 +35,7 @@ exports.deleteReview = async function (req, res) {
         if (!findBook) return res.status(404).send({ status: false, msg: "no such book exist🤷‍♂️🤷‍♂️" })
         let findreview = await reviewModel.findOneAndUpdate({ bookId: bookId, _id: reviewId }, { $set: { isDeleted: true } }, { new: true })
         if (!findreview) return res.status(404).send({ status: false, msg: 'no such review exist' })
+        let updateBook = await booksModel.findOneAndUpdate({_id:bookId},{$inc:{reviews : -1}},{new:true})
         res.status(200).send()
 
 

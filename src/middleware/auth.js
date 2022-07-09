@@ -29,11 +29,8 @@ exports.Authenticate = function (req, res, next) {
                     
                 }
             );
-            if (decodedToken == null)
-            {
-                return res.status(401).send({ status: false, msg: "invalid token" });
-            }
         }
+        next()
        
     } catch (err)
     {
