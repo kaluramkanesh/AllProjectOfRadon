@@ -1,7 +1,6 @@
 const bookModel = require("../models/booksModel")
 const reviewModel = require('../models/reviewModel')
 const mongoose = require("mongoose")
-<<<<<<< HEAD
 const isvalid = function (value) {
     if (typeof value === undefined || typeof value === null) return false
     if (typeof value !== String || value.trim().length == 0) return false
@@ -11,12 +10,6 @@ const isValidKey = function (value) {
     if (!value) return false
     return true
 }
-=======
-const ObjectId = mongoose.Types.ObjectId
-
-
-
->>>>>>> bd1537d819c3d1646739c25b7c8f0ec70b79ae8b
 exports.createBook = async function (req, res) {
     try {
         const bookData = req.body
