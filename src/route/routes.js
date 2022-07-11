@@ -12,13 +12,13 @@ router.post('/login', userController.loginUser)
 
 /************BOOK ROUTER👍************/
 router.post("/books",auth.Authenticate,bookController.createBook)
-router.get("/books",auth.Authenticate,bookController.getBook)
+router.get("/books",bookController.getBook)
 router.delete("/books/:bookId",auth.Authenticate,auth.Authorization,bookController.deleteBooks)
 
 /*********************Review ROUTER**********************/
 router.post("/books/:bookId/review", validator.reviewValidation, reviewController.createReview)
 router.delete('/books/:bookId/review/:reviewId', reviewController.deleteReview)
-
+router.put('/books/:bookId',bookController.updateBooks)
 
 
 router.all("/**", function (req, res) {

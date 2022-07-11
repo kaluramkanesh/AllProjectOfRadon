@@ -104,7 +104,7 @@ exports.reviewValidation = async function (req, res, next) {
         }
         const { reviewedBy, reviewedAt, rating } = data
 
-        if (!(/^[A-Za-z ]{1,15}$/.test(reviewedBy))) return res.status(400).send({ status: false, msg: "reiviewedBy can't be blank or invalid" })
+        if (!(/^[A-Za-z ]{1,15}$/.test(reviewedBy))) return res.status(400).send({ status: false, msg: "reiviewedBy can't be blank or invalid😵‍💫😵‍💫" })
         if (!(/^[1-5]{1,1}$/.test(rating))) return res.status(400).send({ status: false, msg: "enter valid ratings🤷‍♂️🤷‍♂️" })
 
         next();
