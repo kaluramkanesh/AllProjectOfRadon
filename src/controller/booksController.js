@@ -9,62 +9,62 @@ const ObjectId = mongoose.Types.ObjectId
 exports.createBook = async function (req, res) {
     try {
         const bookData = req.body
-        // const fieldAllowed = ["title", "excerpt", "userId", "ISBN", "category", "subcategory", "releasedAt"]
-        // const keyOf = Object.keys(bookData);
-        // const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
-        // if (!receivedKey.length) {
-        //     return res
-        //         .status(400)
-        //         .send({ status: "false", msg: `${receivedKey} field is missing` }); 
-        // }
+        const fieldAllowed = ["title", "excerpt", "userId", "ISBN", "category", "subcategory", "releasedAt"]
+        const keyOf = Object.keys(bookData);
+        const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
+        if (!receivedKey.length) {
+            return res
+                .status(400)
+                .send({ status: "false", msg: `${receivedKey} field is missing` }); 
+        }
 
         const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = bookData
         /**********************************Start's title validation********************************/
 
-        // if (!/^[a-zA-Z 0-9 ,-_'@$&]$/) return res.status(400).send({ status: false, msg: `${title} is not valid title` })
+        if (!/^[a-zA-Z 0-9 ,-_'@$&]$/) return res.status(400).send({ status: false, msg: `${title} is not valid title` })
 
-        // const isDupliCateTitle = await bookModel.findOne({ title: title })
+        const isDupliCateTitle = await bookModel.findOne({ title: title })
 
-        // if (isDupliCateTitle) { return res.status(400).send({ status: false, msg: "title is already present in our DataBase" }) }
+        if (isDupliCateTitle) { return res.status(400).send({ status: false, msg: "title is already present in our DataBase" }) }
         /**********************************End title validation********************************/
 
         /**********************************start's userID validation********************************/
 
-        // let isValidUserID = mongoose.Types.ObjectId.isValid(userId)
-        // console.log(isValidUserID)
-        // if (!isValidUserID) return res.status(400).send({ status: false, msg: `${userId} userID has something wrong` })
+        let isValidUserID = mongoose.Types.ObjectId.isValid(userId)
+        console.log(isValidUserID)
+        if (!isValidUserID) return res.status(400).send({ status: false, msg: `${userId} userID has something wrong` })
 
-        // const isvalidUserId = await userModel.findById(userId)
+        const isvalidUserId = await userModel.findById(userId)
 
-        // if (!isvalidUserId) { return res.status(404).send({ status: false, msg: "User not found" }) }
+        if (!isvalidUserId) { return res.status(404).send({ status: false, msg: "User not found" }) }
 
         /**********************************End userID validation********************************/
 
         /**********************************Start's ISBN validation********************************/
 
-        // const isDupliCateISBN = await bookModel.findOne({ ISBN: ISBN })
-        // if (isDupliCateISBN) {
-        //     return res.status(400).send({ status: false, msg: "ISBN is already present in our DataBase" })
-        // }
+        const isDupliCateISBN = await bookModel.findOne({ ISBN: ISBN })
+        if (isDupliCateISBN) {
+            return res.status(400).send({ status: false, msg: "ISBN is already present in our DataBase" })
+        }
         /**********************************End ISBN validation********************************/
 
         /********************************** Start's RealeasedAt validation********************************/
 
-        // /^\d{4}-\d{2}-\d{2}$/
-        // if (!/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/.test(releasedAt)) {
-        //     return res.status(400).send({ status: false, msg: `${releasedAt} is an invalid date, formate should be like this YYYY-MM-DD` })
-        // }
+        
+        if (!/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/.test(releasedAt)) {
+        return res.status(400).send({ status: false, msg: `${releasedAt} is an invalid date, formate should be like this YYYY-MM-DD` })
+        }
         /**********************************End RealeasedAt validation********************************/
 
         /********************************** Start's Category validation********************************/
 
-        //if (!/^[a-zA-Z .,'-_]$/.test(category)) return res.status(400).send({ status: false, msg: `${category} is not valid category ` })
+        if (!/^[a-zA-Z .,'-_]$/.test(category)) return res.status(400).send({ status: false, msg: `${category} is not valid category ` })
 
         /**********************************End Category validation********************************/
 
         /**********************************Start's Subcategory validation********************************/
 
-        //if (!/^[a-zA-Z .',-_]$/.test(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory please enter valid subcategory` })
+        if (!/^[a-zA-Z .',-_]$/.test(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory please enter valid subcategory` })
 
         /**********************************End Subcategory validation********************************/
 
