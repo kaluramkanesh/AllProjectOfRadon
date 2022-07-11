@@ -1,6 +1,9 @@
 const bookModel = require("../models/booksModel")
 const reviewModel = require('../models/reviewModel')
 const mongoose = require("mongoose")
+const ObjectId = mongoose.Types.ObjectId
+
+
 const isvalid = function (value) {
     if (typeof value === undefined || typeof value === null) return false
     if (typeof value !== String || value.trim().length == 0) return false
@@ -16,7 +19,7 @@ exports.createBook = async function (req, res) {
         const fieldAllowed = ["title", "excerpt", "userId", "ISBN", "category", "subcategory", "releasedAt"]
         const keyOf = Object.keys(bookData);
         const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
-        if (receivedKey.length) {
+        if (!receivedKey.length) {
             return res
                 .status(400)
                 .send({ status: "false", msg: `${receivedKey} field is missing` });
@@ -65,7 +68,7 @@ exports.createBook = async function (req, res) {
         if (isValidKey(releasedAt)) return res.status(400).send({ status: false, msg: "realeasedAt field is required" })
 
         if (!isvalid(releasedAt)) return res.status(400).send({ status: false, msg: `${releasedAt} is not valid date, date formate should be like YYYY-MM-DD` })
-        
+
         // /^\d{4}-\d{2}-\d{2}$/
         if (!/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/.test(releasedAt)) {
             return res.status(400).send({ status: false, msg: `${releasedAt} is an invalid date, formate should be like this YYYY-MM-DD` })
@@ -106,14 +109,26 @@ exports.getBook = async function (req, res) {
         let filters = req.query
 
         Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
-        if(filters.userId!=24){res.status(400).send(" UserId Invalid ")}
-
+        if (Object.keys(filters).length != 0) {
+            if (filters.userId != 24) { res.status(400).send(" UserId Invalid ") }
+        }
         if (Object.keys(filters).length === 0) {
 
             let books = await bookModel.find({ isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 })
 
-            if (books.length == 0) res.status(404).send({ status: false, msg: "No result found" })
-            res.status(200).send({ status: true, data: books })
+            if (books.length == 0) { return res.status(404).send({ status: false, msg: "No result found" }) }
+            let sortedBooks = books.sort(function (a, b) {
+                var titleA = a.title.toUpperCase(); // ignore upper and lowercase
+                var titleB = b.title.toUpperCase(); // ignore upper and lowercase
+                if (titleA < titleB) {
+                    return -1; //titleA comes first
+                }
+                if (titleA > titleB) {
+                    return 1; // titleB comes first
+                }
+                return 0;
+            })
+            res.status(200).send({ status: true, data: sortedBooks })
 
         } else {
             if (filters.subcategory) {
@@ -127,8 +142,21 @@ exports.getBook = async function (req, res) {
         let filteredBooks = await bookModel.find(filters).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 })
 
         if (filteredBooks.length === 0) return res.status(404).send({ status: false, msg: "No such data available" })
-        else return res.status(200).send({ status: true, data: filteredBooks })
+        else {
+                let sortedBooks = filteredBooks.sort(function (a, b) {
+                var titleA = a.title.toUpperCase(); // ignore upper and lowercase
+                var titleB = b.title.toUpperCase(); // ignore upper and lowercase
+                if (titleA < titleB) {
+                    return -1; //titleA comes first
+                }
+                if (titleA > titleB) {
+                    return 1; // titleB comes first
+                }
+                return 0;
+            })
+            res.status(200).send({ status: true, data: sortedBooks })
 
+        }
 
     }
     catch (err) {
@@ -140,8 +168,8 @@ exports.getBook = async function (req, res) {
 exports.getBookById = async function (req, res) {
     try {
         let bookId = req.params.bookId
-        if(!(ObjectId.isValid(bookId)) || !bookId) return res.status(400).send({status:false,msg:'Enter a valid ObjectId'})
-        let findBook = await bookModel.findOne({ _id: bookId }).select({deletedAt:0})
+        if (!(ObjectId.isValid(bookId))) return res.status(400).send({ status: false, msg: 'Enter a valid ObjectId' })
+        let findBook = await bookModel.findOne({ _id: bookId }).select({ deletedAt: 0 })
         if (!findBook) return res.status(404).send({ status: false, msg: "no data found" })
         let findReview = await reviewModel.find({ bookId: bookId })
 
@@ -154,3 +182,66 @@ exports.getBookById = async function (req, res) {
         res.status(500).send(err.message)
     }
 }
+// <=============================DeleteBooks==================================================>
+
+exports.deleteBooks = async function (req, res) {
+    try {
+        const bookId = req.params.bookId
+        const isValidBookId = await bookModel.findOne({ _id: bookId, isDeleted: false })
+        if (!isValidBookId) {
+            return res.status(404).send({ status: false, msg: "book is not available" })
+        }
+        if (!ObjectId.isValid(bookId)) return res.status(400).send({ status: false, msg: `${bookId} is not a valid ObjectId😥😥` })
+
+        const deleteBook = await bookModel.findByIdAndUpdate(bookId, { isDeleted: true, deletedAt: new Date() },
+            { new: true })
+        res.status(200).send({ status: true, msg: "Book successfully deleted😍😍", })
+    }
+    catch (err) {
+
+        res.status(500).send({ msg: err.message })
+    }
+}
+exports.updateBooks = async function (req, res) {
+    try {
+        let bookId = req.params.bookId
+        // if (bookId== null||bookId=="") { 
+        //     return res.status(400).send(" BookId is not available")
+        //  }
+        if (bookId.length != 24) {
+            return res.status(400).send(" BookId Invalid ")
+        }
+        let book = await bookModel.findById(bookId);
+        if (Object.keys(book).length == 0 || book.isDeleted == true) {
+            return res.status(404).send(" No such data found ")
+        }
+        let reqData = req.body;
+        let upData = {};
+        if (reqData.title) {
+            upData.title = reqData.title;
+        }
+        if (reqData.excerpt) {
+            upData.excerpt = reqData.excerpt;
+        }
+        if (reqData.ISBN) {
+            upData.ISBN = reqData.ISBN;
+        }
+
+
+        if (Object.keys(upData).length == 0) {
+            return res.status(400).send(" No data to update ")
+        }
+        upData.releasedAt = new Date()
+        let updated = await bookModel.findOneAndUpdate({ _id: bookId }, upData, { new: true })
+        return res.status(200).send({ status: true, Data: updated })
+
+
+    }
+    catch (err) {
+        res.status(500).send({ msg: err.message })
+    }
+
+}
+
+
+
