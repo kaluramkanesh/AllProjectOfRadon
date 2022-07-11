@@ -104,6 +104,11 @@ exports.getBook = async function (req, res) {
             return res.status(200).send({ status: true, data: sortedBooks })
 
         } else {
+            Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
+            if(filters.userId){
+                if (filters.userId.length !== 24) { return res.status(400).send({status:false,msg:" UserId Invalid "}) }
+                }
+
             if (filters.subcategory) {
                 if (filters.subcategory.includes(",")) {
                     let subcatArray = filters.subcategory.split(",").map(String).map(x => x.trim())
@@ -127,7 +132,7 @@ exports.getBook = async function (req, res) {
                 }
                 return 0;
             })
-            res.status(200).send({ status: true, data: sortedBooks })
+            return res.status(200).send({ status: true, data: sortedBooks })
 
         }
 
@@ -201,12 +206,14 @@ exports.updateBooks = async function (req, res) {
         if (reqData.ISBN) {
             upData.ISBN = reqData.ISBN;
         }
-
+        if (reqData.releasedAt) {
+            upData.releasedAt = reqData.releasedAt;
+        }
 
         if (Object.keys(upData).length == 0) {
             return res.status(400).send(" No data to update ")
         }
-        upData.releasedAt = new Date()
+        // upData.releasedAt = new Date()
         let updated = await bookModel.findOneAndUpdate({ _id: bookId }, upData, { new: true })
         res.status(200).send({ status: true, Data: updated })
 
