@@ -107,11 +107,8 @@ exports.createBook = async function (req, res) {
 exports.getBook = async function (req, res) {
     try {
         let filters = req.query
-
-        Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
-        if (Object.keys(filters).length != 0) {
-            if (filters.userId != 24) { res.status(400).send(" UserId Invalid ") }
-        }
+        
+      
         if (Object.keys(filters).length === 0) {
 
             let books = await bookModel.find({ isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 })
@@ -131,6 +128,11 @@ exports.getBook = async function (req, res) {
             res.status(200).send({ status: true, data: sortedBooks })
 
         } else {
+            Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
+            if(filters.userId){
+                if (filters.userId.length !== 24) { return res.status(400).send({status:false,msg:" UserId Invalid "}) }
+                }
+
             if (filters.subcategory) {
                 if (filters.subcategory.includes(",")) {
                     let subcatArray = filters.subcategory.split(",").map(String).map(x => x.trim())
@@ -154,7 +156,7 @@ exports.getBook = async function (req, res) {
                 }
                 return 0;
             })
-            res.status(200).send({ status: true, data: sortedBooks })
+            return res.status(200).send({ status: true, data: sortedBooks })
 
         }
 
@@ -228,12 +230,14 @@ exports.updateBooks = async function (req, res) {
         if (reqData.ISBN) {
             upData.ISBN = reqData.ISBN;
         }
-
+        if (reqData.releasedAt) {
+            upData.releasedAt = reqData.releasedAt;
+        }
 
         if (Object.keys(upData).length == 0) {
             return res.status(400).send(" No data to update ")
         }
-        upData.releasedAt = new Date()
+        // upData.releasedAt = new Date()
         let updated = await bookModel.findOneAndUpdate({ _id: bookId }, upData, { new: true })
         return res.status(200).send({ status: true, Data: updated })
 
