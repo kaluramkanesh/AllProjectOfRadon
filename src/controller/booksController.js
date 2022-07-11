@@ -10,33 +10,24 @@ const isvalid = function (value) {
     if (typeof value !== String || value.trim().length == 0) return false
     return true
 }
-const isValidKey = function (value) {
-    if (!value) return false
-    return true
-}
+
 exports.createBook = async function (req, res) {
     try {
         const bookData = req.body
-        // const fieldAllowed = ["title", "excerpt", "userId", "ISBN", "category", "subcategory", "releasedAt"]
-        // const keyOf = Object.keys(bookData);
-        // const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
-        // if (receivedKey.length) {
-        //     return res
-        //         .status(400)
-        //         .send({ status: "false", msg: `${receivedKey} field is missing` });
-        // }
+
         const fieldAllowed = ["title", "excerpt", "userId", "ISBN", "category", "subcategory", "releasedAt"]
+
         const keyOf = Object.keys(bookData);
+
         const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
+
         if (!receivedKey.length) {
-            return res
-                .status(400)
-                .send({ status: "false", msg: `${receivedKey} field is missing` });
+            return res.status(400).send({ status: "false", msg: `${receivedKey} field is missing` });
         }
 
         const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = bookData
         /**********************************Start's title validation********************************/
-        if (isValidKey(title)) return res.status(400).send({ status: false, msg: "title field is required" })
+
 
         if (!isvalid(title)) return res.status(400).send({ status: false, msg: `${title} is not valid title` })
 
@@ -47,13 +38,20 @@ exports.createBook = async function (req, res) {
         if (isDupliCateTitle) { return res.status(400).send({ status: false, msg: "title is already present in our DataBase" }) }
         /**********************************End title validation********************************/
 
+        /**********************************Start's excerpt validation********************************/
+
+        if (!isvalid(excerpt)) return res.status(400).send({ status: false, msg: `${excerpt} is not valid excerpt` })
+
+
+        /**********************************End excerpt validation********************************/
+
         /**********************************start's userID validation********************************/
-        if (isValidKey(userId)) return res.status(400).send({ status: false, msg: "userID field is required" })
+
 
         if (!isvalid(userId)) return res.status(400).send({ status: false, msg: `${userId} enter valid userID` })
 
         let isValidUserID = mongoose.Types.ObjectId.isValid(userId)
-        console.log(isValidUserID)
+
         if (!isValidUserID) return res.status(400).send({ status: false, msg: `${userId} userID has something wrong` })
 
         const isvalidUserId = await userModel.findById(userId)
@@ -63,18 +61,17 @@ exports.createBook = async function (req, res) {
         /**********************************End userID validation********************************/
 
         /**********************************Start's ISBN validation********************************/
-        if (!isValidKey(ISBN)) return res.status(400).send({ status: false, msg: "ISBN field is required" })
 
         if (!isvalid(ISBN)) return res.status(400).send({ status: false, msg: `${ISBN} Is not valid ` })
-
+        if (!(/\d{3}-?\d{10}/.test(ISBN))) return res.status({ status: false, msg: `${ISBN} is soulde not be more than 13 digit` })
         const isDupliCateISBN = await bookModel.findOne({ ISBN: ISBN })
-        if (isDupliCateISBN) {
-            return res.status(400).send({ status: false, msg: "ISBN is already present in our DataBase" })
+
+        if (isDupliCateISBN) { return res.status(400).send({ status: false, msg: "ISBN is already present in our DataBase" })
         }
         /**********************************End ISBN validation********************************/
 
         /********************************** Start's RealeasedAt validation********************************/
-        if (isValidKey(releasedAt)) return res.status(400).send({ status: false, msg: "realeasedAt field is required" })
+
 
         if (!isvalid(releasedAt)) return res.status(400).send({ status: false, msg: `${releasedAt} is not valid date, date formate should be like YYYY-MM-DD` })
 
@@ -86,7 +83,7 @@ exports.createBook = async function (req, res) {
 
         /********************************** Start's Category validation********************************/
 
-        if (isValidKey(category)) return res.status(400).send({ status: false, msg: "category field is required" })
+
 
         if (!isvalid(category)) return res.status(400).send({ status: false, msg: `${category} is not valid category` })
 
@@ -96,7 +93,6 @@ exports.createBook = async function (req, res) {
 
         /**********************************Start's Subcategory validation********************************/
 
-        if (isValidKey(subcategory)) return res.status(400).send({ status: false, msg: "subcategory field is required" })
 
         if (!isvalid(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory` })
 
@@ -105,10 +101,11 @@ exports.createBook = async function (req, res) {
         /**********************************End Subcategory validation********************************/
 
         const saved = await bookModel.create(bookData)
+
         res.status(201).send({ status: true, data: saved })
     }
     catch (err) {
-        console.log(err)
+
         res.status(500).send({ status: false, msg: err.message })
     }
 }
@@ -118,8 +115,9 @@ exports.getBook = async function (req, res) {
         let filters = req.query
 
         Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
+
         if (Object.keys(filters).length != 0) {
-            if (filters.userId != 24) { res.status(400).send(" UserId Invalid ") }
+            if (filters.userId != 24) {return res.status(400).send(" UserId Invalid ") }
         }
         if (Object.keys(filters).length === 0) {
 
@@ -152,7 +150,7 @@ exports.getBook = async function (req, res) {
 
         if (filteredBooks.length === 0) return res.status(404).send({ status: false, msg: "No such data available" })
         else {
-                let sortedBooks = filteredBooks.sort(function (a, b) {
+            let sortedBooks = filteredBooks.sort(function (a, b) {
                 var titleA = a.title.toUpperCase(); // ignore upper and lowercase
                 var titleB = b.title.toUpperCase(); // ignore upper and lowercase
                 if (titleA < titleB) {
