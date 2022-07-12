@@ -46,27 +46,16 @@ exports.createBook = async function (req, res) {
         if (isDupliCateISBN) {
             return res.status(400).send({ status: false, msg: "ISBN is already present in our DataBase" })
         }
-        /**********************************End ISBN validation********************************/
-
-        /********************************** Start's RealeasedAt validation********************************/
-
+       
         
         if (!/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/.test(releasedAt)) {
         return res.status(400).send({ status: false, msg: `${releasedAt} is an invalid date, formate should be like this YYYY-MM-DD` })
         }
-        /**********************************End RealeasedAt validation********************************/
-
-        /********************************** Start's Category validation********************************/
 
         if (!/^[a-zA-Z .,'-_]$/.test(category)) return res.status(400).send({ status: false, msg: `${category} is not valid category ` })
 
-        /**********************************End Category validation********************************/
-
-        /**********************************Start's Subcategory validation********************************/
-
         if (!/^[a-zA-Z .',-_]$/.test(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory please enter valid subcategory` })
 
-        /**********************************End Subcategory validation********************************/
 
         const saved = await bookModel.create(bookData)
         res.status(201).send({ status: true, data: saved })
