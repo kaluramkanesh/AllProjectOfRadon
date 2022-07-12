@@ -27,7 +27,6 @@ exports.Authenticate = function (req, res, next) {
                 }
             );
         }
-        next()
        
     } catch (err)
     {

@@ -40,7 +40,7 @@ exports.createBook = async function (req, res) {
 
         if (!isvalid(title)) return res.status(400).send({ status: false, msg: `${title} is not valid title please enter valid title` })
 
-        if (!/^[a-zA-Z 0-9 ,-_'@$&]$/) return res.status(400).send({ status: false, msg: `${title} is not valid title` })
+        if (!isValidString(title)) {return res.status(400).send({ status: false, msg: `${title} is not valid title` })}
 
         const isDupliCateTitle = await bookModel.findOne({ title: title })
 
@@ -86,11 +86,29 @@ exports.createBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: `${releasedAt} is an invalid date, formate should be like this YYYY-MM-DD` })
         }
         
-        if(isValidString(category))
+        if(isValidString(category)) return res.status(400).send({status:false,msg:'category must be in valid format'})
 
         if (!/^[a-zA-Z .',-_]$/.test(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory please enter valid subcategory` })
 
 
+        /**********************************End Category validation********************************/
+
+        /**********************************Start's Subcategory validation********************************/
+        if (typeof subcategory !== "string" || subcategory.trim().length === 0) {
+            if (Array.isArray(subcategory)) {
+
+                for (let i = 0; i < subcategory.length; i++) {
+                    
+                    if (typeof subcategory[i] != 'string') return res.status(400).send({ status: false, msg: " subcategory should be string" })
+                }
+
+            } else { return res.status(400).send({ status: false, msg: "subcategory should be a string" }) }
+        }
+
+       
+
+        /**********************************End Subcategory validation********************************/
+        
         const saved = await bookModel.create(bookData)
 
         res.status(201).send({ status: true, data: saved })

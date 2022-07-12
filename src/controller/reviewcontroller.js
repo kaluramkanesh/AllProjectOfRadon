@@ -70,3 +70,12 @@ exports.deleteReview = async function (req, res) {
 }
 
 /**************************************End Delete Review Api's😍😊****************************************/
+
+
+/**************************************Start's  Review Put Api's😍😊****************************************/
+//Update the review - review, rating, reviewer's name.
+//- Check if the bookId exists and is not deleted before updating the review. Check if the review exist before updating the review. Send an error response with appropirate status code like [this](#error-response-structure) if the book does not exist
+//- Get review details like review, rating, reviewer's name in request body.
+//- Return the updated book document with reviews data on successful operation. The response body should be in the form of JSON object like [this](#book-details-response)
+
+/**************************************End  Review Put Api's😍😊****************************************/

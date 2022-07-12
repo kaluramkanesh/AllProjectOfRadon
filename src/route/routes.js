@@ -13,7 +13,7 @@ router.post('/login', userController.loginUser)
 /************BOOK ROUTER👍************/
 router.post("/books",bookController.createBook)
 router.get("/books",auth.Authenticate,bookController.getBook)
-router.get("/GET /books/:bookId",auth.Authenticate,bookController.getBookById)
+router.get("/books/:bookId",auth.Authenticate,bookController.getBookById)
 router.delete("/books/:bookId",auth.Authenticate,auth.Authorization,bookController.deleteBooks)
 
 

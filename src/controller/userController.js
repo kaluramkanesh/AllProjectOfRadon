@@ -36,7 +36,7 @@ exports.loginUser = async function (req, res) {
             id: user._id.toString(),
             batch: "radon",
             organization: "functionUp"
-        }, "GroupNo-27", { expiresIn: '1h' })
+        }, "GroupNo-27", { expiresIn: '1min' })
 
         res.setHeader("x-api-key", token);
 
