@@ -21,7 +21,7 @@ exports.Authenticate = function (req, res, next) {
                 function (err, token) {
                     if (err){return res.status(401).send({status: false, msg: "invalid toke"})
                         } 
-                        req.loggedInUserId = token.id
+                        //req.loggedInUserId = token.id
                         next()
                     
                 }

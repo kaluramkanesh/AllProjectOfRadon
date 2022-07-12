@@ -6,11 +6,11 @@ const ObjectId = mongoose.Types.ObjectId
 
 
 
-// const isvalid = function (value) {
-//     if (typeof value === "undefined" || typeof value === null) return false
-//     if (typeof value !== "string" || value.trim().length === 0) return false
-//     return true
-// }
+const isvalid = function (value) {
+    if (typeof value === "undefined" || typeof value === null) return false
+    if ( value.trim().length === 0) return false
+    return true
+}
 const isValidString = function (value) {
     if (typeof value === 'string' && value.trim().length === 0) return false
     if (!(/^[A-Za-z-._,@& ]+$/.test(value))) {
@@ -38,7 +38,7 @@ exports.createBook = async function (req, res) {
         const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = bookData
         /**********************************Start's title validation********************************/
 
-        // if (!isvalid(title)) return res.status(400).send({ status: false, msg: `${title} is not valid title please enter valid title` })
+         if (!isvalid(title)) {return res.status(400).send({ status: false, msg: `${title} is not valid title please enter valid title` })}
 
         if (!isValidString(title)) {return res.status(400).send({ status: false, msg: `${title} is not valid title` })}
 
@@ -50,7 +50,7 @@ exports.createBook = async function (req, res) {
         /**********************************Start's excerpt validation********************************/
 
         if (!isvalid(excerpt)) return res.status(400).send({ status: false, msg: `${excerpt} is not valid excerpt` })
-
+          
 
         /**********************************End excerpt validation********************************/
 
@@ -86,9 +86,9 @@ exports.createBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: `${releasedAt} is an invalid date, formate should be like this YYYY-MM-DD` })
         }
         
-        if(isValidString(category)) return res.status(400).send({status:false,msg:'category must be in valid format'})
+      //  if(!isValidString(category)) return res.status(400).send({status:false,msg:'category must be in valid format'})
 
-        if (!/^[a-zA-Z .',-_]$/.test(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory please enter valid subcategory` })
+        //if (!/^[a-zA-Z .',-_]$/.test(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory please enter valid subcategory` })
 
 
         /**********************************End Category validation********************************/
