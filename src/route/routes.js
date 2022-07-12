@@ -21,7 +21,7 @@ router.delete("/books/:bookId",auth.Authenticate,auth.Authorization,bookControll
 router.post("/books/:bookId/review", validator.reviewValidation, reviewController.createReview)
 router.delete('/books/:bookId/review/:reviewId', reviewController.deleteReview)
 router.put('/books/:bookId',bookController.updateBooks)
-
+router.put("/books/:bookId/review/:reviewId",validator.putReviewValidation,reviewController.UpdateRiew)
 
 router.all("/**", function (req, res) {
     res.status(404).send({

@@ -7,7 +7,13 @@ const isvalid = function (value) {
     if (typeof value !== String || value.trim().length == 0) return false
     return true
 }
-
+const isValidString = function (value) {
+    if (typeof value === 'string' && value.trim().length === 0) return false
+    if (!(/^[A-Za-z-._,@& ]+$/.test(value))) {
+        return false
+    }
+    return true;
+}
 exports.userValidation = async function (req, res, next) {
     let data = req.body
 
@@ -111,9 +117,34 @@ exports.reviewValidation = async function (req, res, next) {
 
         if (!(/^[A-Za-z ]{1,15}$/.test(reviewedBy))) return res.status(400).send({ status: false, msg: "reiviewedBy can't be blank or invalid😵‍💫😵‍💫" })
         if (!(/^[1-5]{1,1}$/.test(rating))) return res.status(400).send({ status: false, msg: "enter valid ratings🤷‍♂️🤷‍♂️" })
-        /************************End Review Validation****************************/
         next();
+        /************************End Review Validation****************************/
     } catch (err) {
         res.status(500).send(err.message)
+    }
+}
+/************************start's Put Review Validation****************************/
+exports.putReviewValidation = async function (req, res, next) {
+
+    try {
+        let updateReviewData = req.body
+        let { review, rating, reviewedBy } = updateReviewData
+        if (review) {
+           
+            if (!isValidString(review)) { return res.status(400).send({ status: false, msg: `${review} review should be only string formate` }) }
+        }
+
+        if (rating) {
+            if (typeof rating !== "number") { return res.status(400).send({ status: false, msg: "rating will  only Number" }) }
+            if (!(/^[1-5]{1,1}$/.test(rating))) { return res.status(400).send({ status: false, msg: `${rating} rating must be 1 to 5 only` }) }
+        }
+        if (reviewedBy) {
+           
+            if (!isValidString(reviewedBy)) { return res.status(400).send({ status: false, msg: `${reviewedBy} reviever name should be only string formate` }) }
+            next();
+        }
+        /************************End Put Review Validation****************************/
+    } catch (Error) {
+        res.status(500).send({ status: false, msg: Error.message })
     }
 }

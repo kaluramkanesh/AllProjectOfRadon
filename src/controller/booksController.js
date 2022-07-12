@@ -6,11 +6,11 @@ const ObjectId = mongoose.Types.ObjectId
 
 
 
-const isvalid = function (value) {
-    if (typeof value === "undefined" || typeof value === null) return false
-    if (typeof value !== "string" || value.trim().length === 0) return false
-    return true
-}
+// const isvalid = function (value) {
+//     if (typeof value === "undefined" || typeof value === null) return false
+//     if (typeof value !== "string" || value.trim().length === 0) return false
+//     return true
+// }
 const isValidString = function (value) {
     if (typeof value === 'string' && value.trim().length === 0) return false
     if (!(/^[A-Za-z-._,@& ]+$/.test(value))) {
@@ -38,7 +38,7 @@ exports.createBook = async function (req, res) {
         const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = bookData
         /**********************************Start's title validation********************************/
 
-        if (!isvalid(title)) return res.status(400).send({ status: false, msg: `${title} is not valid title please enter valid title` })
+        // if (!isvalid(title)) return res.status(400).send({ status: false, msg: `${title} is not valid title please enter valid title` })
 
         if (!isValidString(title)) {return res.status(400).send({ status: false, msg: `${title} is not valid title` })}
 
