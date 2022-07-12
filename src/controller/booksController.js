@@ -1,14 +1,22 @@
 const bookModel = require("../models/booksModel")
 const reviewModel = require('../models/reviewModel')
+const userModel = require('../models/userModel')
 const mongoose = require("mongoose")
 const ObjectId = mongoose.Types.ObjectId
 
 
 
 const isvalid = function (value) {
-    if (typeof value === undefined || typeof value === null) return false
-    if (typeof value !== String || value.trim().length == 0) return false
+    if (typeof value === "undefined" || typeof value === null) return false
+    if (typeof value !== "string" || value.trim().length === 0) return false
     return true
+}
+const isValidString = function (value) {
+    if (typeof value === 'string' && value.trim().length === 0) return false
+    if (!(/^[A-Za-z-._,@& ]+$/.test(value))) {
+        return false
+    }
+    return true;
 }
 
 exports.createBook = async function (req, res) {
@@ -21,15 +29,16 @@ exports.createBook = async function (req, res) {
 
         const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
 
-        if (!receivedKey.length) {
+        if (receivedKey.length) {
+
             return res.status(400).send({ status: "false", msg: `${receivedKey} field is missing` });
+
         }
 
         const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = bookData
         /**********************************Start's title validation********************************/
 
-
-        if (!isvalid(title)) return res.status(400).send({ status: false, msg: `${title} is not valid title` })
+        if (!isvalid(title)) return res.status(400).send({ status: false, msg: `${title} is not valid title please enter valid title` })
 
         if (!/^[a-zA-Z 0-9 ,-_'@$&]$/) return res.status(400).send({ status: false, msg: `${title} is not valid title` })
 
@@ -63,43 +72,52 @@ exports.createBook = async function (req, res) {
         /**********************************Start's ISBN validation********************************/
 
         if (!isvalid(ISBN)) return res.status(400).send({ status: false, msg: `${ISBN} Is not valid ` })
-        if (!(/\d{3}-?\d{10}/.test(ISBN))) return res.status({ status: false, msg: `${ISBN} is soulde not be more than 13 digit` })
+
+        if (!(/\d{3}-?\d{10}/.test(ISBN))) return res.status(400).send({ status: false, msg: `${ISBN} ISBN should be 13 digit` })
+
         const isDupliCateISBN = await bookModel.findOne({ ISBN: ISBN })
 
-        if (isDupliCateISBN) { return res.status(400).send({ status: false, msg: "ISBN is already present in our DataBase" })
+        if (isDupliCateISBN) {
+            return res.status(400).send({ status: false, msg: "ISBN is already present in our DataBase" })
         }
         /**********************************End ISBN validation********************************/
 
         /********************************** Start's RealeasedAt validation********************************/
 
 
-        if (!isvalid(releasedAt)) return res.status(400).send({ status: false, msg: `${releasedAt} is not valid date, date formate should be like YYYY-MM-DD` })
 
-        // /^\d{4}-\d{2}-\d{2}$/
         if (!/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/.test(releasedAt)) {
             return res.status(400).send({ status: false, msg: `${releasedAt} is an invalid date, formate should be like this YYYY-MM-DD` })
         }
         /**********************************End RealeasedAt validation********************************/
 
         /********************************** Start's Category validation********************************/
+       
+         if (!isvalid(category)) {return res.status(400).send({ status: false, msg: `${category} is not valid Hello category` })}
 
+         if (!isValidString(category)){ return res.status(400).send({ status: false, msg: `${category} is not valid category ` })}  
 
-
-        if (!isvalid(category)) return res.status(400).send({ status: false, msg: `${category} is not valid category` })
-
-        if (!/^[a-zA-Z .,'-_]$/.test(category)) res.status(400).send({ status: false, msg: `${category} is not valid category ` })
 
         /**********************************End Category validation********************************/
 
         /**********************************Start's Subcategory validation********************************/
+        if (typeof subcategory !== "string" || subcategory.trim().length === 0) {
+            if (Array.isArray(subcategory)) {
 
+                for (let i = 0; i < subcategory.length; i++) {
+                    
+                    if (typeof subcategory[i] != 'string') return res.status(400).send({ status: false, msg: " subcategory should be string" })
+                }
 
-        if (!isvalid(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory` })
+            } else { return res.status(400).send({ status: false, msg: "subcategory should be a string" }) }
+        }
 
-        if (!/^[a-zA-Z .',-_]$/.test(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory please enter valid subcategory` })
+        // if (!isvalid(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory` })
+
+        // if (!isValidString(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory please enter valid subcategory` })
 
         /**********************************End Subcategory validation********************************/
-
+        console.log("Hello")
         const saved = await bookModel.create(bookData)
 
         res.status(201).send({ status: true, data: saved })
@@ -117,7 +135,7 @@ exports.getBook = async function (req, res) {
         Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
 
         if (Object.keys(filters).length != 0) {
-            if (filters.userId != 24) {return res.status(400).send(" UserId Invalid ") }
+            if (filters.userId != 24) { return res.status(400).send(" UserId Invalid ") }
         }
         if (Object.keys(filters).length === 0) {
 
@@ -135,9 +153,14 @@ exports.getBook = async function (req, res) {
                 }
                 return 0;
             })
-            res.status(200).send({ status: true, data: sortedBooks })
+            return res.status(200).send({ status: true, data: sortedBooks })
 
         } else {
+            Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
+            if (filters.userId) {
+                if (filters.userId.length !== 24) { return res.status(400).send({ status: false, msg: " UserId Invalid " }) }
+            }
+
             if (filters.subcategory) {
                 if (filters.subcategory.includes(",")) {
                     let subcatArray = filters.subcategory.split(",").map(String).map(x => x.trim())
@@ -161,7 +184,7 @@ exports.getBook = async function (req, res) {
                 }
                 return 0;
             })
-            res.status(200).send({ status: true, data: sortedBooks })
+            return res.status(200).send({ status: true, data: sortedBooks })
 
         }
 
@@ -235,14 +258,16 @@ exports.updateBooks = async function (req, res) {
         if (reqData.ISBN) {
             upData.ISBN = reqData.ISBN;
         }
-
+        if (reqData.releasedAt) {
+            upData.releasedAt = reqData.releasedAt;
+        }
 
         if (Object.keys(upData).length == 0) {
             return res.status(400).send(" No data to update ")
         }
-        upData.releasedAt = new Date()
+        // upData.releasedAt = new Date()
         let updated = await bookModel.findOneAndUpdate({ _id: bookId }, upData, { new: true })
-        return res.status(200).send({ status: true, Data: updated })
+        res.status(200).send({ status: true, Data: updated })
 
 
     }
