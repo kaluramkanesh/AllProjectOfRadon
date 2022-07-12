@@ -6,20 +6,39 @@ const ObjectId = mongoose.Types.ObjectId
 
 
 
+const isvalid = function (value) {
+    if (typeof value === "undefined" || typeof value === null) return false
+    if (typeof value !== "string" || value.trim().length === 0) return false
+    return true
+}
+const isValidString = function (value) {
+    if (typeof value === 'string' && value.trim().length === 0) return false
+    if (!(/^[A-Za-z-._,@& ]+$/.test(value))) {
+        return false
+    }
+    return true;
+}
+
 exports.createBook = async function (req, res) {
     try {
         const bookData = req.body
+
         const fieldAllowed = ["title", "excerpt", "userId", "ISBN", "category", "subcategory", "releasedAt"]
+
         const keyOf = Object.keys(bookData);
+
         const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
-        if (!receivedKey.length) {
-            return res
-                .status(400)
-                .send({ status: "false", msg: `${receivedKey} field is missing` }); 
+
+        if (receivedKey.length) {
+
+            return res.status(400).send({ status: "false", msg: `${receivedKey} field is missing` });
+
         }
 
         const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = bookData
         /**********************************Start's title validation********************************/
+
+        if (!isvalid(title)) return res.status(400).send({ status: false, msg: `${title} is not valid title please enter valid title` })
 
         if (!/^[a-zA-Z 0-9 ,-_'@$&]$/) return res.status(400).send({ status: false, msg: `${title} is not valid title` })
 
@@ -28,10 +47,20 @@ exports.createBook = async function (req, res) {
         if (isDupliCateTitle) { return res.status(400).send({ status: false, msg: "title is already present in our DataBase" }) }
         /**********************************End title validation********************************/
 
+        /**********************************Start's excerpt validation********************************/
+
+        if (!isvalid(excerpt)) return res.status(400).send({ status: false, msg: `${excerpt} is not valid excerpt` })
+
+
+        /**********************************End excerpt validation********************************/
+
         /**********************************start's userID validation********************************/
 
+
+        if (!isvalid(userId)) return res.status(400).send({ status: false, msg: `${userId} enter valid userID` })
+
         let isValidUserID = mongoose.Types.ObjectId.isValid(userId)
-        console.log(isValidUserID)
+
         if (!isValidUserID) return res.status(400).send({ status: false, msg: `${userId} userID has something wrong` })
 
         const isvalidUserId = await userModel.findById(userId)
@@ -42,26 +71,32 @@ exports.createBook = async function (req, res) {
 
         /**********************************Start's ISBN validation********************************/
 
+        if (!isvalid(ISBN)) return res.status(400).send({ status: false, msg: `${ISBN} Is not valid ` })
+
+        if (!(/\d{3}-?\d{10}/.test(ISBN))) return res.status(400).send({ status: false, msg: `${ISBN} ISBN should be 13 digit` })
+
         const isDupliCateISBN = await bookModel.findOne({ ISBN: ISBN })
+
         if (isDupliCateISBN) {
             return res.status(400).send({ status: false, msg: "ISBN is already present in our DataBase" })
         }
        
         
         if (!/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/.test(releasedAt)) {
-        return res.status(400).send({ status: false, msg: `${releasedAt} is an invalid date, formate should be like this YYYY-MM-DD` })
+            return res.status(400).send({ status: false, msg: `${releasedAt} is an invalid date, formate should be like this YYYY-MM-DD` })
         }
-
-        if (!/^[a-zA-Z .,'-_]$/.test(category)) return res.status(400).send({ status: false, msg: `${category} is not valid category ` })
+        
+        if(isValidString(category))
 
         if (!/^[a-zA-Z .',-_]$/.test(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory please enter valid subcategory` })
 
 
         const saved = await bookModel.create(bookData)
+
         res.status(201).send({ status: true, data: saved })
     }
     catch (err) {
-        console.log(err)
+
         res.status(500).send({ status: false, msg: err.message })
     }
 }
@@ -90,9 +125,9 @@ exports.getBook = async function (req, res) {
 
         } else {
             Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
-            if(filters.userId){
-                if (filters.userId.length !== 24) { return res.status(400).send({status:false,msg:" UserId Invalid "}) }
-                }
+            if (filters.userId) {
+                if (filters.userId.length !== 24) { return res.status(400).send({ status: false, msg: " UserId Invalid " }) }
+            }
 
             if (filters.subcategory) {
                 if (filters.subcategory.includes(",")) {

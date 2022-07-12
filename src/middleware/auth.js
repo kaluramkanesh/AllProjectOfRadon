@@ -19,10 +19,7 @@ exports.Authenticate = function (req, res, next) {
             const decodedToken = jwt.verify(token, "GroupNo-27",
 
                 function (err, token) {
-                    if (err)
-                    {
-                        return res.status(401).send({
-                            status: false, msg: "invalid toke"})
+                    if (err){return res.status(401).send({status: false, msg: "invalid toke"})
                         } 
                         req.loggedInUserId = token.id
                         next()

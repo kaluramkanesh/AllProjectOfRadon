@@ -56,6 +56,11 @@
   isDeleted: {boolean, default: false},
 }
 ```
+data
+
+newdata={
+  bookid: bookid,
+  reviewedBy:reviewedBy ? reviewedBy : 'Guest' }
 
 ## User APIs 
 ### POST /register

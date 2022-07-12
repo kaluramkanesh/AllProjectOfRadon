@@ -1,11 +1,12 @@
 const userModel = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 
-/**************************************Start's Create User Api's****************************************/
+/**************************************Start's Create User Api's😍😊****************************************/
 exports.createUser = async function (req, res) {
 
     try {
         let data = req.body
+
         let savedData = await userModel.create(data);
 
         res.status(201).send({ status: true, message: 'Success', data: savedData })
@@ -13,11 +14,14 @@ exports.createUser = async function (req, res) {
         res.status(500).send({ status: false, msg: Error.message })
     }
 }
-// /**************************************End Create User Api's😍😊****************************************/
 
+/**************************************End Create User Api's😍😊****************************************/
+
+/**************************************Start's Login User Api's😍😊****************************************/
 exports.loginUser = async function (req, res) {
     try {
         let email = req.body.email
+
         let password = req.body.password
 
         if (Object.keys(req.body).length == 0) {
@@ -25,6 +29,7 @@ exports.loginUser = async function (req, res) {
         }
 
         let user = await userModel.findOne({ email: email, password: password })
+
         if (!user) return res.status(404).send({ status: false, msg: "please enter valid email or password" })
 
         let token = jwt.sign({
@@ -32,9 +37,14 @@ exports.loginUser = async function (req, res) {
             batch: "radon",
             organization: "functionUp"
         }, "GroupNo-27", { expiresIn: '1h' })
+
         res.setHeader("x-api-key", token);
+
         res.status(200).send({ status: true, message: 'Success', data: token })
+        
     } catch (err) {
         res.status(500).send(err.message)
     }
 }
+
+/**************************************End Login User Api's😍😊****************************************/

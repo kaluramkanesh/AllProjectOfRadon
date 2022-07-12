@@ -4,19 +4,24 @@ const mongoose = require('mongoose')
 // <=======================validation Function=================================================>
 const isvalid = function (value) {
     if (typeof value === undefined || typeof value === null) return false
-    if (typeof value === String || value.trim().length == 0) return false
+    if (typeof value !== String || value.trim().length == 0) return false
     return true
 }
-const isValidKey = function (value) {
-    if (!value) return false
-    true
-}
+
 exports.userValidation = async function (req, res, next) {
     let data = req.body
+
+
+    const fieldAllowed = ["title", "name", "phone", "email", "password"]
+    const keyOf = Object.keys(data);
+    const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
+    if (!receivedKey.length) {
+        return res.status(400).send({ status: "false", msg: `${receivedKey} field is missing` });
+    }
     let { title, name, phone, email, password } = data
     if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "body can not be empty" })
     /**************************title field validation*************************/
-    if (isValidKey(title)) return res.status(400).send({ status: false, msg: "title field is required" })
+
 
     if (!isvalid(title)) return res.status(400).send({ status: false, msg: `${title} is not valid` })
 
@@ -25,7 +30,7 @@ exports.userValidation = async function (req, res, next) {
     /**************************title field validation*************************/
 
     /**************************name field validation*************************/
-    if (isValidKey(name)) return res.status(400).send({ status: false, msg: "name field is required" })
+
 
     if (!isvalid(name)) return res.status(400).send({ status: false, msg: `${name} is not valid name` })
 
@@ -35,11 +40,11 @@ exports.userValidation = async function (req, res, next) {
 
     /**************************Phone field validation*************************/
 
-    if (isValidKey(phone)) return res.status(400).send({ status: false, msg: "Phone Number field is required" })
+
 
     if (!isvalid(phone)) return res.status(400).send({ status: false, msg: `${phone} is not valid  mobile number` })
 
-    if (!/^[6789]\d{9}*$/.test(phone)) return res.status(400).send({ status: false, msg: `${phone} it will containt only number not accept space or special charecture` })
+    if (!/^[6789]\w{9}$/.test(phone)) return res.status(400).send({ status: false, msg: `${phone} it will containt only number not accept space or special charecture` })
 
     let findPhoneNumber = await userModel.findOne({ phone: phone }).select({ phone: 1 })
 
@@ -48,7 +53,7 @@ exports.userValidation = async function (req, res, next) {
     /**************************Phone field validation*************************/
 
     /**************************email field validation*************************/
-    if (isValidKey(email)) return res.status(400).send({ status: false, msg: "email field is required" })
+
 
     if (!isvalid(email)) return res.status(400).send({ status: false, msg: `${email} is not valid emaiil` })
 
@@ -61,7 +66,7 @@ exports.userValidation = async function (req, res, next) {
     /**************************email field validation*************************/
 
     /**************************Password field validation*************************/
-    if (isValidKey(password)) return res.status(400).send({ status: false, msg: "password field is required" })
+
 
     if (!isvalid(password)) return res.status(400).send({ status: false, msg: `${password} is not valid password` })
 
@@ -74,26 +79,26 @@ exports.userValidation = async function (req, res, next) {
     /*************Street validation*************/
     if (!isvalid(data.address["street"])) return res.status(400).send({ status: false, msg: `${data.address["street"]} is not valid street` })
 
-    if (!/^[a-zA-Z .,-_]{2,15}$/.test(data.address["street"])) return res.status(400).send({ status: false, msg: `${data.address["street"]}` })
+    if (!/^[a-zA-Z .,-_]{2,15}$/.test(data.address["street"])) return res.status(400).send({ status: false, msg: `${data.address["street"]} please enter valid street name` })
     /*************Street validation*************/
 
     /*************City validation*************/
     if (!isvalid(data.address["city"])) return res.status(400).send({ status: false, msg: `${data.address["city"]} is not valid city name` })
 
-    if (!/^[a-zA-Z .-,_]{2,20}$/.test(data.address["city"])) return res.status(400).send({ status: false, msg: `${data.address["city"]} is not valid city name please enter valid city name` })
+    if (!/^[a-zA-Z .-_]{2,20}$/.test(data.address["city"])) return res.status(400).send({ status: false, msg: `${data.address["city"]} is not valid city name please enter valid city name` })
     /*************City validation*************/
 
     /*************Pincode validation*************/
-    if (isvalid(data.address["pincode"])) return res.status(400).send({ status: false, msg: `${data.address["pincode"]} is not valid pincode ` })
+    if (!isvalid(data.address["pincode"])) return res.status(400).send({ status: false, msg: `${data.address["pincode"]} is not valid pincode ` })
 
-    if (!/\d/.test(data.address["pincode"])) return res.status(400).send({ status: false, msg: ` please enter pincode upto 6 digit's` })
+    if (!/\d[1-6]/.test(data.address["pincode"])) return res.status(400).send({ status: false, msg: ` please enter pincode upto 6 digit's` })
     /*************Pincode validation*************/
     next();
 }
-
+/************************Start's Review Validation****************************/
 exports.reviewValidation = async function (req, res, next) {
     try {
-        const fieldAllowed = ["reviewedBy","rating"];
+        const fieldAllowed = ["reviewedBy", "rating"];
         const data = req.body;
         const keyOf = Object.keys(data);
         const receivedKey = fieldAllowed.filter((x) => !keyOf.includes(x));
@@ -102,11 +107,11 @@ exports.reviewValidation = async function (req, res, next) {
                 .status(400)
                 .send({ status: "false", msg: `${receivedKey} field is missing` });
         }
-        const { reviewedBy, reviewedAt, rating } = data
+        const { reviewedBy, rating } = data
 
         if (!(/^[A-Za-z ]{1,15}$/.test(reviewedBy))) return res.status(400).send({ status: false, msg: "reiviewedBy can't be blank or invalid😵‍💫😵‍💫" })
         if (!(/^[1-5]{1,1}$/.test(rating))) return res.status(400).send({ status: false, msg: "enter valid ratings🤷‍♂️🤷‍♂️" })
-
+        /************************End Review Validation****************************/
         next();
     } catch (err) {
         res.status(500).send(err.message)
