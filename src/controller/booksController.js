@@ -40,7 +40,7 @@ exports.createBook = async function (req, res) {
 
         if (!isvalid(title)) return res.status(400).send({ status: false, msg: `${title} is not valid title please enter valid title` })
 
-        if (!/^[a-zA-Z 0-9 ,-_'@$&]$/) return res.status(400).send({ status: false, msg: `${title} is not valid title` })
+        if (!isValidString(title)) {return res.status(400).send({ status: false, msg: `${title} is not valid title` })}
 
         const isDupliCateTitle = await bookModel.findOne({ title: title })
 
@@ -112,12 +112,10 @@ exports.createBook = async function (req, res) {
             } else { return res.status(400).send({ status: false, msg: "subcategory should be a string" }) }
         }
 
-        // if (!isvalid(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory` })
-
-        // if (!isValidString(subcategory)) return res.status(400).send({ status: false, msg: `${subcategory} is not valid subcategory please enter valid subcategory` })
+       
 
         /**********************************End Subcategory validation********************************/
-        console.log("Hello")
+        
         const saved = await bookModel.create(bookData)
 
         res.status(201).send({ status: true, data: saved })
