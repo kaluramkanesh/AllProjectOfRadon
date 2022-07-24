@@ -13,6 +13,6 @@ mongoose.connect("mongodb+srv://kaluram123:iKetOTUhK5vten7w@cluster0.4yhyg.mongo
 
 app.use("/", router)
 
-app.listen(process.env.PORT || 3000, function () {
-    console.log(`Server is connected on Port ${process.env.PORT || 300} ✅✅✅`)
+app.listen(process.env.PORT || 4000, function () {
+    console.log(`Server is connected on Port ${process.env.PORT || 4000} ✅✅✅`)
 })
